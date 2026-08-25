@@ -66,4 +66,70 @@ describe('Central de Atendimento ao Cliente TAT', () => {
     cy.get('.success').should('be.visible').and('contain', 'Mensagem enviada com sucesso.')
   })
 
+  it('select product by text YouTube', () => {
+    cy.get('#product').select('YouTube')
+      .should('have.value', 'youtube');
+  })
+
+  it('select product by value mentoria', () => {
+    cy.get('#product').select('mentoria')
+      .should('have.value', 'mentoria');
+  })
+
+  it('select Blog product by index', () => {
+    cy.get('#product').select(1)
+      .should('have.value', 'blog');
+  })
+
+  it('mark feedback radio button', () => {
+    cy.get('[name="atendimento-tat"]').check('feedback');
+    cy.get('input[type="radio"][value="feedback"]').should('be.checked');
+  })
+
+  it('mark each radio button', () => {
+    cy.get('[name="atendimento-tat"]').each((radio) => {
+      cy.wrap(radio).check();
+      cy.wrap(radio).should('be.checked');
+    });
+  });
+
+  it('check both checkboxes and uncheck the last one', () => {
+      cy.get('input[type="checkbox"]').as('checkboxes').check();
+      cy.get('@checkboxes').each((checkbox) => {
+        cy.wrap(checkbox).should('be.checked');
+      });
+      cy.get('@checkboxes').last().uncheck();
+      cy.get('@checkboxes').last().should('not.be.checked');
+  })
+
+  it('select a file from fixtures folder', () => {
+    cy.get('#file-upload').selectFile('cypress/fixtures/exampleFile.json');
+    cy.get('#file-upload').should((input) => {
+      expect(input[0].files[0].name).to.equal('exampleFile.json');
+    })
+  })
+
+  it('select a file from fixtures folder using drag-and-drop', () => {
+    cy.get('#file-upload').selectFile('cypress/fixtures/exampleFile.json', ({action: 'drag-drop'}));
+    cy.get('#file-upload').should((input) => {
+      expect(input[0].files[0].name).to.equal('exampleFile.json');
+    })  
+  })
+
+  it('select a file using an alias', () => {
+    cy.fixture('exampleFile.json').as('sampleFile');
+    cy.get('#file-upload').selectFile('@sampleFile');
+    cy.get('#file-upload').should((input) => {
+      expect(input[0].files[0].name).to.equal('exampleFile.json');
+    })
+  })
+
+  it('verify that the privacy policy link opens in a new tab without clicking', () => {
+    cy.get('#privacy a').should('have.attr', 'target', '_blank');
+  })
+
+  it('access privacy policy', () => {
+    cy.get('#privacy a').invoke('removeAttr', 'target').click();
+    cy.get('.privacy').should('be.visible').and('contain', 'Talking About Testing');
+  })
 })
